@@ -1,0 +1,9 @@
+---
+nbsp_version: v0.0.1
+
+postgresql_version: 17
+postgresql_settings:
+  lock_timeout: 5000
+  statement_timeout: 5000
+  idle_in_transaction_session_timeout: 600000
+  timezone: "'UTC'"

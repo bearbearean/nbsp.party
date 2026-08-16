@@ -1,0 +1,11 @@
+servers:
+  hosts:
+    nbsp.example:
+      site_hostname: "nbsp.example"
+      sysadmin_email: "contact@nbsp.example"
+      sysadmin_user_name: "example"
+      sysadmin_user_ssh_key: "your ssh public key"
+      nbsp_pg_database: "nbsp-example"
+      nbsp_pg_host: "/var/run/postgresql"
+      nbsp_pg_username: "nbsp"
+      enable_caddy_tls: true
