@@ -1,0 +1,5 @@
+.ansible
+.direnv
+.vscode
+ansible.log*
+inventory.yml
