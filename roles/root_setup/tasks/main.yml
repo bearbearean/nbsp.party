@@ -1,0 +1,21 @@
+---
+- name: "Install aptitude"
+  ansible.builtin.apt:
+    name: aptitude
+    update_cache: true
+
+- name: "Setup passwordless sudo for the 'sudo' group"
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: "^%sudo"
+    line: "%sudo ALL=(ALL) NOPASSWD: ALL"
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: "Disable requiretty so Ansible can use pipelining"
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: "^Defaults !requiretty$"
+    line: "Defaults !requiretty"
+    validate: "/usr/sbin/visudo -cf %s"

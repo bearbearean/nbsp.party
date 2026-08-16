@@ -1,0 +1,21 @@
+---
+- name: "Root Setup"
+  hosts: all
+  become: true
+  # This Ansible playbook sets up a few server things as the root user:
+  roles:
+    # Make sure apt, sudo and Ansible can be used well
+    - root_setup
+    # Set up a sysadmin user as defined in inventory.yml
+    - users
+    # Install and configure ufw to allow only SSH, HTTP and HTTPS traffic
+    - ufw
+    # Configure sshd to disallow root login and disallow password authentication
+    - ssh
+    # After this playbook finishes, it should be impossible to run this playbook again as
+    # we won't be able to log in as root anymore.
+  vars:
+    # This playbook has to run as root
+    ansible_user: "root"
+    # Directly specify the Python interpreter to use so Ansible doesn't need to search for it
+    ansible_python_interpreter: "/usr/bin/python3"

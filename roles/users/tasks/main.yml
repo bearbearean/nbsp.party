@@ -1,0 +1,15 @@
+---
+- name: "Create the sysadmin user: {{ sysadmin_user_name }}"
+  ansible.builtin.user:
+    name: "{{ sysadmin_user_name }}"
+    state: present
+    groups: sudo
+    append: true
+    create_home: true
+    shell: /bin/bash
+
+- name: "Add the sysadmin SSH key to authorized keys"
+  ansible.posix.authorized_key:
+    user: "{{ sysadmin_user_name }}"
+    state: present
+    key: "{{ sysadmin_user_ssh_key }}"

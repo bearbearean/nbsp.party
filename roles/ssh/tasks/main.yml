@@ -1,0 +1,10 @@
+---
+- name: "Add the sshd user configuration"
+  ansible.builtin.copy:
+    src: 00-user.conf
+    dest: /etc/ssh/sshd_config.d/00-user.conf
+    owner: root
+    group: root
+    mode: "0644"
+    validate: sshd -t -f %s
+  notify: Restart sshd

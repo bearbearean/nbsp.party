@@ -1,0 +1,26 @@
+---
+- name: "Install UFW"
+  ansible.builtin.apt:
+    name: ufw
+
+- name: "Allow OpenSSH in UFW"
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: "Allow HTTP in UFW"
+  community.general.ufw:
+    rule: allow
+    port: 80
+    proto: tcp
+
+- name: "Allow HTTPS in UFW"
+  community.general.ufw:
+    rule: allow
+    port: 443
+    proto: tcp
+
+- name: "Enable UFW"
+  community.general.ufw:
+    state: enabled
+    default: deny
