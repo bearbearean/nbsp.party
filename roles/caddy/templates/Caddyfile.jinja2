@@ -1,0 +1,7 @@
+{{ site_hostname }} {
+	{% if enable_caddy_tls %}
+	tls {{ sysadmin_email }}
+	{% endif %}
+	encode gzip
+	reverse_proxy 127.0.0.1:3000
+}

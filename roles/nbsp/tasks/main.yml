@@ -1,0 +1,35 @@
+---
+- name: "Setup /opt/nbsp"
+  ansible.builtin.file:
+    path: "/opt/nbsp/bin"
+    state: directory
+    mode: "0755"
+
+- name: "Download nbsp binary archive"
+  ansible.builtin.unarchive:
+    src: "https://github.com/bearbearean/nbsp/releases/download/{{ nbsp_version }}/nbsp-x86_64-unknown-linux-gnu.tar.gz"
+    remote_src: "yes"
+    dest: "/opt/nbsp/bin"
+
+- name: "Create nbsp production.env"
+  ansible.builtin.template:
+    src: production.env.jinja2
+    dest: /opt/nbsp/production.env
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: "Create the nbsp systemd unit"
+  ansible.builtin.template:
+    src: nbsp.service.jinja2
+    dest: /etc/systemd/system/nbsp.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: "Start nbsp unit service"
+  ansible.builtin.systemd_service:
+    name: nbsp
+    daemon_reload: true
+    enabled: true
+    state: started

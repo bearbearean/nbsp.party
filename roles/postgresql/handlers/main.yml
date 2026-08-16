@@ -1,0 +1,6 @@
+---
+- name: "Restart postgresql"
+  ansible.builtin.include_tasks: restart.yml
+
+- name: "Reload postgresql"
+  ansible.builtin.include_tasks: reload.yml

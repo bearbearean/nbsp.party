@@ -1,0 +1,28 @@
+---
+- name: "Ensure GPG is installed, needed for APT key"
+  ansible.builtin.apt:
+    name: "gpg"
+
+- name: "Add Caddy APT repository"
+  ansible.builtin.deb822_repository:
+    name: caddy
+    types: deb
+    uris: https://dl.cloudsmith.io/public/caddy/stable/deb/debian
+    signed_by: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
+    suites: "any-version"
+    components:
+      - "main"
+
+- name: "Install Caddy"
+  ansible.builtin.apt:
+    name: "caddy"
+
+- name: "Create the Caddyfile"
+  ansible.builtin.template:
+    src: Caddyfile.jinja2
+    dest: /etc/caddy/Caddyfile
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload Caddy

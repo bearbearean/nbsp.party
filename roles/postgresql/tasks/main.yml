@@ -1,0 +1,52 @@
+---
+- name: "Install PostgreSQL"
+  ansible.builtin.apt:
+    name: postgresql-{{ postgresql_version }}
+
+- name: "Start and enable PostgreSQL meta unit service"
+  ansible.builtin.systemd_service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: "Start and enable PostgreSQL cluster service"
+  ansible.builtin.systemd_service:
+    name: postgresql@{{ postgresql_version }}-main
+    state: started
+    enabled: true
+
+- name: "Set configuration options in postgresql.conf"
+  ansible.builtin.lineinfile:
+    path: /etc/postgresql/{{ postgresql_version }}/main/postgresql.conf
+    regexp: "^#?{{ item.key }} ?="
+    line: "{{ item.key }} = {{ item.value }}"
+  loop: "{{ postgresql_settings | dict2items }}"
+  notify:
+    - Restart postgresql
+
+- name: "Install psycopg2 for ansible to use community.postgresql roles"
+  ansible.builtin.apt:
+    name: python3-psycopg2
+
+- name: "Create PostgreSQL nbsp database"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_db:
+    name: "{{ nbsp_pg_database }}"
+
+- name: "Create PostgreSQL nbsp user"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_user:
+    login_db: "{{ nbsp_pg_database }}"
+    name: "{{ nbsp_pg_username }}"
+
+- name: "Grant nbsp all privileges on PostgreSQL database public schema"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_privs:
+    login_db: "{{ nbsp_pg_database }}"
+    privs: ALL
+    type: schema
+    objs: public
+    role: "{{ nbsp_pg_username }}"

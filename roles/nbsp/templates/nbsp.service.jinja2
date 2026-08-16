@@ -1,0 +1,17 @@
+[Unit]
+Description=nbsp
+Requires=postgresql@{{ postgresql_version }}-main.service
+After=network.target
+
+[Service]
+DynamicUser=true
+RuntimeDirectory=nbsp
+WorkingDirectory=/opt/nbsp
+ExecStart=/opt/nbsp/bin/nbsp
+PrivateTmp=true
+Restart=always
+RestartSec=30
+EnvironmentFile=/opt/nbsp/production.env
+
+[Install]
+WantedBy=multi-user.target

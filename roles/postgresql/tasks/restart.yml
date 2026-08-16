@@ -1,0 +1,10 @@
+---
+- name: "Restart PostgreSQL meta unit service"
+  ansible.builtin.systemd_service:
+    name: postgresql
+    state: restarted
+
+- name: "Restart PostgreSQL cluster service"
+  ansible.builtin.systemd_service:
+    name: postgresql@{{ postgresql_version }}-main
+    state: restarted
