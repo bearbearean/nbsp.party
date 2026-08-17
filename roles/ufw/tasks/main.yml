@@ -20,6 +20,10 @@
     port: 443
     proto: tcp
 
+- name: "Disable UFW logging"
+  community.general.ufw:
+    logging: "off"
+
 - name: "Enable UFW"
   community.general.ufw:
     state: enabled
