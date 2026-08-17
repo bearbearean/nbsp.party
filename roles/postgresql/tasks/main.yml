@@ -21,8 +21,6 @@
     regexp: "^#?{{ item.key }} ?="
     line: "{{ item.key }} = {{ item.value }}"
   loop: "{{ postgresql_settings | dict2items }}"
-  notify:
-    - Restart postgresql
 
 - name: "Install psycopg2 for ansible to use community.postgresql roles"
   ansible.builtin.apt:
@@ -50,3 +48,23 @@
     type: schema
     objs: public
     role: "{{ nbsp_pg_username }}"
+
+- name: "Allow nbsp user to always connect to nbsp database"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_pg_hba:
+    dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+    contype: "local"
+    users: "{{ nbsp_pg_username }}"
+    databases: "{{ nbsp_pg_database }}"
+    method: "trust"
+
+- name: Restart postgresql meta unit service
+  ansible.builtin.systemd_service:
+    name: postgresql
+    state: restarted
+
+- name: Restart postgresql cluster unit service
+  ansible.builtin.systemd_service:
+    name: postgresql@{{ postgresql_version }}-main
+    state: restarted

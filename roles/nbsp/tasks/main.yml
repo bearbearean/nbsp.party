@@ -34,11 +34,17 @@
     enabled: true
     state: started
 
-- name: "Set the nbsp community title and subtitle"
+- name: "Set the nbsp_config"
   become: true
   become_user: "postgres"
   community.postgresql.postgresql_query:
     login_db: "{{ nbsp_pg_database }}"
     query:
+      - "UPDATE nbsp_config SET value = 'https://{{ site_hostname }}' WHERE key = 'nbsp_base_url';"
       - "UPDATE nbsp_config SET value = '{{ nbsp_community_title }}' WHERE key = 'nbsp_community_title';"
       - "UPDATE nbsp_config SET value = '{{ nbsp_community_subtitle }}' WHERE key = 'nbsp_community_subtitle';"
+
+- name: "Restart nbsp"
+  ansible.builtin.systemd_service:
+    name: nbsp
+    state: restarted
