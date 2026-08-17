@@ -1,5 +1,5 @@
 ---
-nbsp_version: v0.0.1
+nbsp_version: v0.0.2
 
 postgresql_version: 17
 postgresql_settings:
