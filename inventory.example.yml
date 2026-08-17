@@ -9,3 +9,5 @@ servers:
       nbsp_pg_host: "/var/run/postgresql"
       nbsp_pg_username: "nbsp"
       enable_caddy_tls: true
+      nbsp_community_title: "non-breaking space"
+      nbsp_community_subtitle: "a thoughtful community forum platform"

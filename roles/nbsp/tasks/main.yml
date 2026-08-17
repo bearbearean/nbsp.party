@@ -33,3 +33,12 @@
     daemon_reload: true
     enabled: true
     state: started
+
+- name: "Set the nbsp community title and subtitle"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_query:
+    login_db: "{{ nbsp_pg_database }}"
+    query:
+      - "UPDATE nbsp_config SET value = '{{ nbsp_community_title }}' WHERE key = 'nbsp_community_title';"
+      - "UPDATE nbsp_config SET value = '{{ nbsp_community_subtitle }}' WHERE key = 'nbsp_community_subtitle';"
