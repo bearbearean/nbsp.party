@@ -1,0 +1,47 @@
+---
+- name: "Stop nbsp"
+  ansible.builtin.systemd_service:
+    name: nbsp
+    state: stopped
+
+- name: "Ensure the nbsp pre-update-backups directory exists"
+  ansible.builtin.file:
+    path: "/opt/nbsp/pre-update-backups"
+    state: directory
+    mode: "0755"
+    owner: "postgres"
+    group: "postgres"
+
+- name: "Set the backup filename as an ansible fact"
+  # This is done so that the now() call doesn't get evaluated multiple times, which would change
+  # timestamps between each use of the variable
+  ansible.builtin.set_fact:
+    nbsp_update_pgdump_filename: "{{ now(utc=true, fmt='%Y%m%d_%H%M%S') }}-before-{{ nbsp_version }}-{{ nbsp_pg_database }}.sql"
+
+- name: "Backup PostgreSQL database to file"
+  become: true
+  become_user: "postgres"
+  community.postgresql.postgresql_db:
+    name: "{{ nbsp_pg_database }}"
+    state: dump
+    target: "/opt/nbsp/pre-update-backups/{{ nbsp_update_pgdump_filename }}"
+
+- name: "Download the backup to the ansible control node"
+  become: true
+  become_user: "postgres"
+  ansible.builtin.fetch:
+    src: "/opt/nbsp/pre-update-backups/{{ nbsp_update_pgdump_filename }}"
+    dest: "~/{{ nbsp_update_pgdump_filename }}"
+    flat: true
+
+- name: "Download nbsp binary archive"
+  ansible.builtin.unarchive:
+    src: "https://github.com/bearbearean/nbsp/releases/download/{{ nbsp_version }}/nbsp-x86_64-unknown-linux-gnu.tar.gz"
+    remote_src: "yes"
+    dest: "/opt/nbsp/bin"
+
+- name: "Start nbsp"
+  ansible.builtin.systemd_service:
+    name: nbsp
+    enabled: true
+    state: started

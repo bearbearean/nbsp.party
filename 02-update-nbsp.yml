@@ -1,0 +1,13 @@
+---
+- name: "Update nbsp"
+  hosts: all
+  become: true
+  roles:
+    - nbsp_update
+  vars:
+    # Connect to the server as the sysadmin user
+    ansible_user: "{{ sysadmin_user_name }}"
+    # Directly specify the Python interpreter to use so Ansible doesn't need to search for it
+    ansible_python_interpreter: "/usr/bin/python3"
+  vars_files:
+    - variables.yml
