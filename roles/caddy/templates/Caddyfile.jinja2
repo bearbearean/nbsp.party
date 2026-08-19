@@ -5,3 +5,15 @@
 	encode gzip
 	reverse_proxy 127.0.0.1:3000
 }
+
+{% if setup_prometheus_node_exporter %}
+{{ node_exporter_hostname }} {
+	tls {{ sysadmin_email }}
+
+	basicauth {
+		{$CADDY_BASIC_AUTH_NODE_EXPORTER}
+	}
+
+	reverse_proxy 127.0.0.1:9100
+}
+{% endif %}

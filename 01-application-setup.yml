@@ -5,6 +5,8 @@
   roles:
     - postgresql
     - nbsp
+    - role: prometheus_node_exporter
+      when: setup_prometheus_node_exporter
     - caddy
   vars:
     # Connect to the server as the sysadmin user

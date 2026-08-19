@@ -17,6 +17,33 @@
   ansible.builtin.apt:
     name: "caddy"
 
+- name: "Create caddy.env"
+  when: setup_prometheus_node_exporter
+  ansible.builtin.template:
+    src: caddy.env.jinja2
+    dest: /etc/caddy/caddy.env
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: "Create systemd caddy override directory"
+  when: setup_prometheus_node_exporter
+  ansible.builtin.file:
+    path: "/etc/systemd/system/caddy.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: "Create caddy override.conf"
+  when: setup_prometheus_node_exporter
+  ansible.builtin.template:
+    src: override.conf.jinja2
+    dest: "/etc/systemd/system/caddy.service.d/override.conf"
+    owner: root
+    group: root
+    mode: "0600"
+
 - name: "Create the Caddyfile"
   ansible.builtin.template:
     src: Caddyfile.jinja2
@@ -24,5 +51,10 @@
     owner: root
     group: root
     mode: "0644"
-  notify:
-    - Reload Caddy
+
+- name: "Restart Caddy"
+  ansible.builtin.systemd_service:
+    name: caddy
+    daemon_reload: true
+    enabled: true
+    state: restarted

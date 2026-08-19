@@ -11,3 +11,6 @@ servers:
       enable_caddy_tls: true
       nbsp_community_title: "non-breaking space"
       nbsp_community_subtitle: "a thoughtful community forum platform"
+      setup_prometheus_node_exporter: false
+      node_exporter_hostname: "node.nbsp.example"
+      caddy_basic_auth_node_exporter: ""
