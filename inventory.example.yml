@@ -14,3 +14,6 @@ servers:
       setup_prometheus_node_exporter: false
       node_exporter_hostname: "node.nbsp.example"
       caddy_basic_auth_node_exporter: ""
+      setup_prometheus_nbsp_metrics: false
+      nbsp_metrics_hostname: "metrics.nbsp.example"
+      caddy_basic_auth_nbsp_metrics: ""

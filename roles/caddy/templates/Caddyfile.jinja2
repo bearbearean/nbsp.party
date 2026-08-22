@@ -17,3 +17,15 @@
 	reverse_proxy 127.0.0.1:9100
 }
 {% endif %}
+
+{% if setup_prometheus_nbsp_metrics %}
+{{ nbsp_metrics_hostname }} {
+	tls {{ sysadmin_email }}
+
+	basicauth {
+		{$CADDY_BASIC_AUTH_NBSP_METRICS}
+	}
+
+	reverse_proxy 127.0.0.1:3001
+}
+{% endif %}

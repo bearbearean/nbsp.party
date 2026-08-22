@@ -18,7 +18,7 @@
     name: "caddy"
 
 - name: "Create caddy.env"
-  when: setup_prometheus_node_exporter
+  when: setup_prometheus_node_exporter or setup_prometheus_nbsp_metrics
   ansible.builtin.template:
     src: caddy.env.jinja2
     dest: /etc/caddy/caddy.env
@@ -27,7 +27,7 @@
     mode: "0600"
 
 - name: "Create systemd caddy override directory"
-  when: setup_prometheus_node_exporter
+  when: setup_prometheus_node_exporter or setup_prometheus_nbsp_metrics
   ansible.builtin.file:
     path: "/etc/systemd/system/caddy.service.d"
     state: directory
@@ -36,7 +36,7 @@
     mode: '0644'
 
 - name: "Create caddy override.conf"
-  when: setup_prometheus_node_exporter
+  when: setup_prometheus_node_exporter or setup_prometheus_nbsp_metrics
   ansible.builtin.template:
     src: override.conf.jinja2
     dest: "/etc/systemd/system/caddy.service.d/override.conf"
