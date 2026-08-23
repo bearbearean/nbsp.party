@@ -6,6 +6,8 @@ Notes on the server infrastructure for nbsp.party!~
 
 In OVHcloud the Edge Network Firewall rules are configured to only authorize inbound traffic for TCP ports 22 (SSH), 80 (HTTP) and 443 (HTTPS). ICMP traffic is also authorized (for ping and traceroute). All other inbound traffic is refused.
 
+![OVHcloud firewall settings](./assets/screenshots/ovhcloud-firewall.png)
+
 [UFW on the server](./roles/ufw/tasks/main.yml) itself also only has SSH, HTTP and HTTPS allowed for inbound TCP.
 
 2026-08-23: Added UFW rules to block all Cloudflare IP ranges. There are bots constantly trying to access endpoints like `/wp-admin/install.php`.
