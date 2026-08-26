@@ -1,4 +1,13 @@
+(block-bots) {
+	@bots header User-Agent "python-requests/*"
+	handle @bots {
+		header Retry-After "Wed, 1 Jan 3000 12:34:56 GMT"
+		respond 429
+	}
+}
+
 {{ site_hostname }} {
+	import block-bots
 	{% if enable_caddy_tls %}
 	tls {{ sysadmin_email }}
 	{% endif %}
