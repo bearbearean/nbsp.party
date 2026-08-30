@@ -10,10 +10,11 @@ In OVHcloud the Edge Network Firewall rules are configured to only authorize inb
 
 [UFW on the server](./roles/ufw/tasks/main.yml) itself also only has SSH, HTTP and HTTPS allowed for inbound TCP.
 
-2026-08-23: Added UFW rules to block all Cloudflare IP ranges. There are bots constantly trying to access endpoints like `/wp-admin/install.php`.
+* 2026-08-23: Added UFW rules to block all [Cloudflare IP ranges](https://www.cloudflare.com/ips/). There are bots constantly trying to access endpoints like `/wp-admin/install.php`.
+* 2026-08-30: Added [Scaleway IP ranges](https://www.scaleway.com/en/docs/account/reference-content/scaleway-network-information/) to the UFW block list.
 
 <details>
-<summary>Bash script to block IP ranges</summary>
+<summary>Example bash script to block IP ranges</summary>
 
 ```bash
 #!/usr/bin/env bash
