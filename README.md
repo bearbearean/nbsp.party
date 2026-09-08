@@ -3,3 +3,7 @@
   <h1>nbsp.party</h1>
   <p>a party in our own corner of the internet</p>
 </div>
+
+---
+
+Black lives matter. Trans rights are human rights. No nazi bullshit.
