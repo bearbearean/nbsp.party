@@ -14,6 +14,7 @@ In OVHcloud the Edge Network Firewall rules are configured to only authorize inb
 * 2026-08-30: Added [Scaleway IP ranges](https://www.scaleway.com/en/docs/account/reference-content/scaleway-network-information/) to the UFW block list.
 * 2026-09-09: Blocked 49.3 Networking LLC range `sudo ufw prepend deny from "45.139.104.0/24" comment "49.3 Networking"`
 * 2026-09-09: Blocked Google Cloud range: `35.188.0.0/17`
+* 2026-09-10: Blocked Google Cloud ranges: `34.32.0.0/17` and `34.32.128.0/17`
 
 <details>
 <summary>Example bash script to block IP ranges</summary>
