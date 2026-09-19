@@ -1,0 +1,31 @@
+---
+- name: "Ensure the nbsp pg_dump directory exists"
+  ansible.builtin.file:
+    path: "{{ nbsp_pg_dump_dest }}"
+    state: directory
+    mode: "0755"
+    owner: "postgres"
+    group: "postgres"
+
+- name: "Create nbsp-pg-dump.service unit"
+  ansible.builtin.template:
+    src: nbsp-pg-dump.service.jinja2
+    dest: /etc/systemd/system/nbsp-pg-dump.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: "Create nbsp-pg-dump.timer"
+  ansible.builtin.template:
+    src: nbsp-pg-dump.timer.jinja2
+    dest: /etc/systemd/system/nbsp-pg-dump.timer
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: "Enable nbsp-pg-dump.timer"
+  ansible.builtin.systemd_service:
+    name: nbsp-pg-dump.timer
+    daemon_reload: true
+    enabled: true
+    state: started

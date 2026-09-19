@@ -1,0 +1,116 @@
+---
+- name: "Ensure the nbsp keys directory exists"
+  ansible.builtin.file:
+    path: "/opt/nbsp/keys"
+    state: directory
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+- name: "Write restic private key to file"
+  ansible.builtin.template:
+    src: nbsp_restic_ssh_key_private.jinja2
+    dest: "{{ nbsp_restic_ssh_key_location }}.private"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+
+- name: "Write restic public key to file"
+  ansible.builtin.template:
+    src: nbsp_restic_ssh_key_public.jinja2
+    dest: "{{ nbsp_restic_ssh_key_location }}.pub"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+
+- name: "Write restic repo password to file"
+  ansible.builtin.template:
+    src: nbsp_restic_repo_password.jinja2
+    dest: "/opt/nbsp/keys/restic-password.txt"
+    mode: "0600"
+    owner: "root"
+    group: "root"
+
+- name: "Install paramiko for ssh_config ansible role"
+  ansible.builtin.apt:
+    name: python3-paramiko
+
+- name: "Ensure system ssh_config contains restic host"
+  community.general.ssh_config:
+    ssh_config_file: "/etc/ssh/ssh_config.d/50-nbsp.conf"
+    host: "{{ nbsp_restic_ssh_config_host }}"
+    hostname: "{{ nbsp_restic_ssh_config_hostname }}"
+    remote_user: "{{ nbsp_restic_ssh_config_user }}"
+    identity_file: "{{ nbsp_restic_ssh_key_location }}.private"
+    identities_only: true
+    state: present
+
+- name: "Download restic binary archive"
+  ansible.builtin.get_url:
+    url: "https://github.com/restic/restic/releases/download/v0.19.1/restic_0.19.1_linux_amd64.bz2"
+    dest: "/tmp/restic_0.19.1_linux_amd64.bz2"
+    mode: "0600"
+
+- name: "Decompress restic binary"
+  community.general.decompress:
+    src: "/tmp/restic_0.19.1_linux_amd64.bz2"
+    dest: "/tmp/restic_0.19.1_linux_amd64"
+    format: "bz2"
+
+- name: "Copy restic binary to /opt/nbsp/bin"
+  ansible.builtin.copy:
+    src: "/tmp/restic_0.19.1_linux_amd64"
+    dest: "/opt/nbsp/bin/restic"
+    mode: "u=rwx"
+    remote_src: true
+
+- name: "Check if restic repo exists"
+  ansible.builtin.command:
+    argv:
+      - "/opt/nbsp/bin/restic"
+      - "--password-file=/opt/nbsp/keys/restic-password.txt"
+      - "--repo={{ nbsp_restic_repo_url }}"
+      - "cat"
+      - "config"
+  register: restic_cat_config
+  # Status 0 = command success
+  # Status 10 = repo does not exist
+  # Any other status is considered an error
+  # https://restic.readthedocs.io/en/stable/075_scripting.html#exit-codes
+  changed_when: "restic_cat_config.rc not in (0, 10)"
+  failed_when: "restic_cat_config.rc not in (0, 10)"
+
+- name: "Initialize restic repo (skipped if repo exists)"
+  when: restic_cat_config.rc == 10
+  ansible.builtin.command:
+    argv:
+      - "/opt/nbsp/bin/restic"
+      - "--password-file=/opt/nbsp/keys/restic-password.txt"
+      - "--repo={{ nbsp_restic_repo_url }}"
+      - "init"
+  register: restic_init
+  changed_when: "restic_init.rc != 0"
+  failed_when: "restic_init.rc != 0"
+
+- name: "Create nbsp-restic-snapshot.service unit"
+  ansible.builtin.template:
+    src: nbsp-restic-snapshot.service.jinja2
+    dest: /etc/systemd/system/nbsp-restic-snapshot.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: "Create nbsp-restic-snapshot.timer"
+  ansible.builtin.template:
+    src: nbsp-restic-snapshot.timer.jinja2
+    dest: /etc/systemd/system/nbsp-restic-snapshot.timer
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: "Enable nbsp-restic-snapshot.timer"
+  ansible.builtin.systemd_service:
+    name: nbsp-restic-snapshot.timer
+    daemon_reload: true
+    enabled: true
+    state: started

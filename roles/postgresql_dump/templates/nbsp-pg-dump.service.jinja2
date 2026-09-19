@@ -1,0 +1,13 @@
+[Unit]
+Description=Dump nbsp PostgreSQL database
+After=network.target
+
+[Service]
+User=postgres
+Group=postgres
+ExecStart=/usr/bin/pg_dump -U {{ nbsp_pg_username }} -d {{ nbsp_pg_database }} -f {{ nbsp_pg_dump_dest }}/pg_dump_backup.sql
+WorkingDirectory={{ nbsp_pg_dump_dest }}
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

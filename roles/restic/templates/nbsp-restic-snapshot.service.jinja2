@@ -1,0 +1,17 @@
+[Unit]
+Description=Create restic snapshot of nbsp data
+After=network.target
+
+[Service]
+Environment="RESTIC_CACHE_DIR=/opt/nbsp/.cache/restic"
+ExecStart=/opt/nbsp/bin/restic \
+  --password-file=/opt/nbsp/keys/restic-password.txt \
+  --repo={{ nbsp_restic_repo_url }} \
+  backup \
+  --tag created-by:nbsp-restic-snapshot.service \
+  /opt/nbsp/daily-backups
+WorkingDirectory=/opt/nbsp
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

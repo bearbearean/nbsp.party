@@ -1,6 +1,8 @@
 ---
 nbsp_version: v0.0.5
 
+nbsp_pg_dump_dest: "/opt/nbsp/daily-backups"
+
 postgresql_version: 17
 postgresql_settings:
   lock_timeout: 5000
