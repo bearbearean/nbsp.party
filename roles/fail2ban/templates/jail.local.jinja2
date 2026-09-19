@@ -1,0 +1,12 @@
+[DEFAULT]
+backend = systemd
+bantime = 7d
+banaction = iptables-multiport
+banaction_allports = iptables-allports
+maxretry = 5
+findtime = 8h
+
+[sshd]
+enabled = true
+mode = aggressive
+port = 22

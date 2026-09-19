@@ -1,0 +1,22 @@
+---
+- name: "Install fail2ban"
+  ansible.builtin.apt:
+    name: fail2ban
+
+- name: "Create fail2ban jail.local file"
+  ansible.builtin.template:
+    src: jail.local.jinja2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: "u=rw"
+
+- name: "Remove Debian defaults"
+  ansible.builtin.file:
+    path: "/etc/fail2ban/jail.d/defaults-debian.conf"
+    state: absent
+
+- name: "Restart fail2ban"
+  ansible.builtin.systemd_service:
+    unit: fail2ban.service
+    state: restarted
